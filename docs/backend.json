@@ -1,0 +1,202 @@
+{
+  "entities": {
+    "Student": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Student",
+      "type": "object",
+      "description": "Represents a student taking the test.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the student."
+        },
+        "fullName": {
+          "type": "string",
+          "description": "The full name of the student."
+        },
+        "semester": {
+          "type": "string",
+          "description": "The semester the student is in."
+        },
+        "usn": {
+          "type": "string",
+          "description": "The University Serial Number of the student."
+        },
+        "mobileNumber": {
+          "type": "string",
+          "description": "The mobile number of the student."
+        },
+        "email": {
+          "type": "string",
+          "description": "The email address of the student.",
+          "format": "email"
+        },
+        "department": {
+          "type": "string",
+          "description": "The department the student belongs to."
+        },
+        "collegeName": {
+          "type": "string",
+          "description": "The name of the college the student attends."
+        }
+      },
+      "required": [
+        "id",
+        "fullName",
+        "semester",
+        "usn",
+        "mobileNumber",
+        "email",
+        "department",
+        "collegeName"
+      ]
+    },
+    "TestResult": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "TestResult",
+      "type": "object",
+      "description": "Stores the results of a student's test attempt.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the test result."
+        },
+        "studentId": {
+          "type": "string",
+          "description": "Reference to Student. (Relationship: Student 1:N TestResult)"
+        },
+        "codingScore": {
+          "type": "number",
+          "description": "The score obtained in the coding section (out of 30)."
+        },
+        "aptitudeScore": {
+          "type": "number",
+          "description": "The score obtained in the aptitude and reasoning section (out of 30)."
+        },
+        "timestamp": {
+          "type": "string",
+          "description": "The timestamp when the test was completed.",
+          "format": "date-time"
+        },
+        "browserInfo": {
+          "type": "string",
+          "description": "Information about the browser used by the student."
+        },
+        "warningsCount": {
+          "type": "number",
+          "description": "The number of tab switch warnings received by the student."
+        }
+      },
+      "required": [
+        "id",
+        "studentId",
+        "codingScore",
+        "aptitudeScore",
+        "timestamp",
+        "browserInfo",
+        "warningsCount"
+      ]
+    },
+    "Question": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Question",
+      "type": "object",
+      "description": "Represents a question in the test.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the question."
+        },
+        "language": {
+          "type": "string",
+          "description": "The programming language of the question (C, Python, Java, Logical, Aptitude)."
+        },
+        "questionText": {
+          "type": "string",
+          "description": "The text of the question."
+        },
+        "options": {
+          "type": "array",
+          "description": "The options for the multiple-choice question.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "answer": {
+          "type": "string",
+          "description": "The correct answer to the question."
+        }
+      },
+      "required": [
+        "id",
+        "language",
+        "questionText",
+        "options",
+        "answer"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/students/{studentId}",
+        "definition": {
+          "entityName": "Student",
+          "schema": {
+            "$ref": "#/backend/entities/Student"
+          },
+          "description": "Stores student information.  Path-based ownership enables simple security rules.",
+          "params": [
+            {
+              "name": "studentId",
+              "description": "The unique identifier of the student."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/questions/{questionId}",
+        "definition": {
+          "entityName": "Question",
+          "schema": {
+            "$ref": "#/backend/entities/Question"
+          },
+          "description": "Stores test questions categorized by language. No student data is stored here, enabling secure listing of questions.",
+          "params": [
+            {
+              "name": "questionId",
+              "description": "The unique identifier of the question."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/students/{studentId}/testResults/{testResultId}",
+        "definition": {
+          "entityName": "TestResult",
+          "schema": {
+            "$ref": "#/backend/entities/TestResult"
+          },
+          "description": "Stores test results for each student. Path-based ownership ensures only the student can access their results.",
+          "params": [
+            {
+              "name": "studentId",
+              "description": "The unique identifier of the student."
+            },
+            {
+              "name": "testResultId",
+              "description": "The unique identifier of the test result."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The Firestore structure is designed to manage student information, test questions, and results efficiently while adhering to the core design principles, especially Authorization Independence. The structure leverages path-based ownership for students and their test results to ensure secure and scalable access control. This eliminates the need for complex `get()` calls in the security rules, enabling atomic operations and simplifying debugging.\n\nThe `students` collection stores student details. Each student has a unique document ID.\n\nThe `questions` collection stores the questions for the tests. Questions are categorized by language (C, Python, Java, Logical, Aptitude). While the application loads questions from a JSON, storing them in Firestore allows for easier management, updates, and potential scaling.  QAPs are supported by ensuring questions are not directly linked to student documents and can be listed without exposing any student-specific data.\n\nThe `students/{studentId}/testResults` subcollection stores test results for each student. This hierarchical structure ensures that test results are directly associated with their respective students, providing clear ownership and simplifying security rules. It also supports QAPs by enabling listing only the current user's results.\n\nAuthorization Independence is achieved by denormalizing ownership. Since `testResults` is a subcollection of `students`, the security rules can easily verify that `request.auth.uid == studentId` to ensure a user can only access their own test results. The use of path-based ownership eliminates the need to read parent documents (`students`) to authorize access to child documents (`testResults`)."
+  }
+}

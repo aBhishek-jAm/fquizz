@@ -1,0 +1,100 @@
+/**
+ * @fileoverview Firestore Security Rules for the application.
+ *
+ * Core Philosophy:
+ * This ruleset enforces a strict user-ownership model, ensuring that users can only
+ * access and modify their own data. This is achieved through path-based authorization,
+ * where the user's ID is embedded in the document path.
+ *
+ * Data Structure:
+ * - /students/{studentId}: Stores student profiles, accessible only by the student themselves.
+ * - /students/{studentId}/testResults/{testResultId}: Stores test results, accessible only by the student who took the test.
+ * - /questions/{questionId}: Stores test questions, publicly readable but not writable via client.
+ *
+ * Key Security Decisions:
+ * - User listing is disabled to protect user privacy.
+ * - Questions are publicly readable (but not writable) to facilitate test delivery.
+ * - The default security posture is strict: all access is denied unless explicitly allowed.
+ *
+ * Denormalization for Authorization:
+ * - Path-based ownership is used to avoid the need for `get()` calls in security rules.
+ *   For example, the /students/{studentId}/testResults/{testResultId} path inherently
+ *   links the test result to the student, eliminating the need to read the student document
+ *   to verify ownership.
+ *
+ * Structural Segregation:
+ * - Questions are stored in a top-level collection separate from user-specific data,
+ *   allowing them to be publicly readable without compromising user privacy.
+ */
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /**
+     * @description Allows students to manage their own profile.
+     * @path /students/{studentId}
+     * @allow (create) User with UID 'user_abc' can create a student document with ID 'user_abc'.
+     * @allow (get) User with UID 'user_abc' can get their own student document with ID 'user_abc'.
+     * @allow (update) User with UID 'user_abc' can update their own student document with ID 'user_abc'.
+     * @allow (delete) User with UID 'user_abc' can delete their own student document with ID 'user_abc'.
+     * @deny (create) User with UID 'user_xyz' cannot create a student document with ID 'user_abc'.
+     * @deny (get) User with UID 'user_xyz' cannot get the student document with ID 'user_abc'.
+     * @principle Enforces document ownership for writes.
+     */
+    match /students/{studentId} {
+      function isOwner(userId) {
+        return request.auth != null && request.auth.uid == userId;
+      }
+      function isExistingOwner(userId) {
+        return isOwner(userId) && resource != null;
+      }
+
+      allow get: if isOwner(studentId);
+      allow list: if false; // Listing all users is not permitted.
+      allow create: if isOwner(studentId) && request.resource.data.id == studentId;
+      allow update: if isExistingOwner(studentId) && request.resource.data.id == resource.data.id;
+      allow delete: if isExistingOwner(studentId);
+    }
+
+    /**
+     * @description Allows public read access to questions, but restricts write access.
+     * @path /questions/{questionId}
+     * @allow (get) Any user can read a question.
+     * @allow (list) Any user can list questions.
+     * @deny (create) No user can create a question.
+     * @deny (update) No user can update a question.
+     * @deny (delete) No user can delete a question.
+     * @principle Allows public read access while restricting write access.
+     */
+    match /questions/{questionId} {
+      allow get, list: if true;
+      allow create, update, delete: if false;
+    }
+
+    /**
+     * @description Allows students to manage their own test results.
+     * @path /students/{studentId}/testResults/{testResultId}
+     * @allow (create) User with UID 'user_abc' can create a test result under their student document.
+     * @allow (get) User with UID 'user_abc' can read their own test results.
+     * @allow (update) User with UID 'user_abc' can update their own test results.
+     * @allow (delete) User with UID 'user_abc' can delete their own test results.
+     * @deny (create) User with UID 'user_xyz' cannot create a test result under student 'user_abc'.
+     * @deny (get) User with UID 'user_xyz' cannot read test results under student 'user_abc'.
+     * @principle Enforces document ownership for writes within a user-owned subcollection.
+     */
+    match /students/{studentId}/testResults/{testResultId} {
+      function isOwner(userId) {
+        return request.auth != null && request.auth.uid == userId;
+      }
+     function isExistingOwner(userId) {
+        return isOwner(userId) && resource != null;
+      }
+
+      allow get: if isOwner(studentId);
+      allow list: if isOwner(studentId);
+      allow create: if isOwner(studentId) && request.resource.data.studentId == studentId;
+      allow update: if isExistingOwner(studentId) && request.resource.data.studentId == resource.data.studentId;
+      allow delete: if isExistingOwner(studentId);
+    }
+  }
+}
