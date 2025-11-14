@@ -18,10 +18,12 @@ export interface StudentDetails {
 }
 
 export interface TestResult {
-  studentDetails: StudentDetails;
+  id: string;
+  studentId: string;
+  studentName: string;
   codingScore: number;
   aptitudeScore: number;
-  submittedAt: any;
-  warningCount: number;
-  userAgent: string;
+  timestamp: any; // Firestore ServerTimestamp
+  warningsCount: number;
+  browserInfo: string;
 }

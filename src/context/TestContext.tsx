@@ -6,7 +6,7 @@ import { useToast } from '@/hooks/use-toast';
 import { allQuestions, codingQuestions, aptitudeQuestions } from '@/lib/questions';
 import type { StudentDetails } from '@/lib/types';
 import { useFirestore, useUser } from '@/firebase';
-import { collection, addDoc, serverTimestamp, doc, setDoc } from 'firebase/firestore';
+import { collection, doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { errorEmitter } from '@/firebase/error-emitter';
 
@@ -77,6 +77,7 @@ export const TestProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         const studentPayload = { ...studentDetails, id: user.uid };
         
         setDoc(studentRef, studentPayload, { merge: true }).catch((error) => {
+            console.error("Error saving student details:", error);
             const permissionError = new FirestorePermissionError({
                 path: studentRef.path,
                 operation: 'write',
@@ -93,10 +94,12 @@ export const TestProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             timestamp: serverTimestamp(),
             browserInfo: navigator.userAgent,
             warningsCount: warningCount,
-            id: testResultRef.id
+            id: testResultRef.id,
+            studentName: studentDetails.fullName,
         };
 
         setDoc(testResultRef, testResultPayload).catch((error) => {
+            console.error("Error saving test result:", error);
             const permissionError = new FirestorePermissionError({
                 path: testResultRef.path,
                 operation: 'create',
@@ -107,7 +110,7 @@ export const TestProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     } else {
         toast({
             title: "Submission Error",
-            description: "You must be logged in to submit a test.",
+            description: "Could not submit test. User or student details missing.",
             variant: "destructive",
         });
     }
@@ -171,6 +174,14 @@ export const TestProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const startTest = () => {
+    if (!user) {
+        toast({
+            title: "Authentication Error",
+            description: "Please wait a moment for authentication to complete.",
+            variant: "destructive"
+        });
+        return;
+    }
     setTimeLeft(TEST_DURATION);
     setIsTestStarted(true);
     router.push('/test');

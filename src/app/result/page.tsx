@@ -1,42 +1,85 @@
 "use client";
 
-import { useContext, useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { TestContext } from '@/context/TestContext';
+import { useCollection, useFirestore, useUser, useMemoFirebase } from '@/firebase';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
 import { CheckCircle, Award } from 'lucide-react';
 import { codingQuestions, aptitudeQuestions } from '@/lib/questions';
+import { collection, query, orderBy, limit } from 'firebase/firestore';
+import type { TestResult } from '@/lib/types';
+
 
 export default function ResultPage() {
   const router = useRouter();
-  const context = useContext(TestContext);
+  const { user, isUserLoading } = useUser();
+  const firestore = useFirestore();
+
+  const testResultsQuery = useMemoFirebase(() => {
+    if (!user) return null;
+    return query(
+        collection(firestore, `students/${user.uid}/testResults`),
+        orderBy('timestamp', 'desc'),
+        limit(1)
+    );
+  }, [firestore, user]);
+
+  const { data: results, isLoading: isResultsLoading } = useCollection<TestResult>(testResultsQuery);
+
+  const latestResult = useMemo(() => (results && results.length > 0 ? results[0] : null), [results]);
 
   useEffect(() => {
-    if (!context?.isSubmitting && !context?.studentDetails) {
-        // Allow access if test was submitted, even after refresh
-        // A better check would be to see if results exist in DB for this user
-        // For now, if context is gone, just redirect.
+    if (!isUserLoading && !user) {
       router.replace('/');
     }
-  }, [context, router]);
+  }, [isUserLoading, user, router]);
 
-  if (!context) {
+  const totalCoding = 30;
+  const totalAptitude = 30;
+
+  if (isUserLoading || isResultsLoading) {
     return (
-        <div className="flex min-h-screen flex-col items-center justify-center p-4">
-            <p>Loading results...</p>
-        </div>
+      <main className="flex min-h-screen flex-col items-center justify-center p-4 sm:p-6 md:p-8">
+        <Card className="w-full max-w-2xl shadow-2xl text-center">
+          <CardHeader>
+            <Skeleton className="h-10 w-10 rounded-full mx-auto" />
+            <Skeleton className="h-8 w-64 mx-auto mt-4" />
+            <Skeleton className="h-6 w-80 mx-auto mt-2" />
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-center">
+              <Skeleton className="h-32 w-full rounded-lg" />
+              <Skeleton className="h-32 w-full rounded-lg" />
+            </div>
+            <Skeleton className="h-40 w-full rounded-lg" />
+          </CardContent>
+          <CardFooter className="flex-col gap-2 pt-6">
+            <Skeleton className="h-8 w-8 rounded-full" />
+            <Skeleton className="h-4 w-48" />
+            <Skeleton className="h-10 w-32 mt-4" />
+          </CardFooter>
+        </Card>
+      </main>
     );
   }
 
-  const { studentDetails, codingScore, aptitudeScore } = context;
-
-  const totalCoding = codingQuestions.length;
-  const totalAptitude = aptitudeQuestions.length;
+  if (!latestResult) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center p-4">
+        <p>No results found. Please complete the test first.</p>
+        <Button onClick={() => router.push('/')} className="mt-4">
+            Back to Home
+        </Button>
+      </div>
+    );
+  }
+  
+  const { studentName, codingScore, aptitudeScore } = latestResult;
 
   const totalScore = codingScore + aptitudeScore;
   const totalQuestions = totalCoding + totalAptitude;
-  
   const percentage = totalQuestions > 0 ? (totalScore / totalQuestions) * 100 : 0;
 
 
@@ -49,7 +92,7 @@ export default function ResultPage() {
           </div>
           <CardTitle className="font-headline text-3xl">Test Completed!</CardTitle>
           <CardDescription className="text-lg">
-            Thank you, {studentDetails?.fullName || 'student'}, for taking the test. Here are your results.
+            Thank you, {studentName || 'student'}, for taking the test. Here are your results.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
