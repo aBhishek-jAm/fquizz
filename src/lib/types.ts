@@ -16,3 +16,12 @@ export interface StudentDetails {
   department: string;
   collegeName: string;
 }
+
+export interface TestResult {
+  studentDetails: StudentDetails;
+  codingScore: number;
+  aptitudeScore: number;
+  submittedAt: any;
+  warningCount: number;
+  userAgent: string;
+}

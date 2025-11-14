@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import { FirebaseClientProvider } from '@/firebase';
 import TestWrapper from '@/components/TestWrapper';
 
 export const metadata: Metadata = {
@@ -23,9 +24,11 @@ export default function RootLayout({
         />
       </head>
       <body className="font-body antialiased">
-        <TestWrapper>
-          {children}
-        </TestWrapper>
+        <FirebaseClientProvider>
+          <TestWrapper>
+            {children}
+          </TestWrapper>
+        </FirebaseClientProvider>
       </body>
     </html>
   );

@@ -1,6 +1,6 @@
 "use client";
 
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -19,6 +19,8 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BookOpenCheck } from 'lucide-react';
 import type { StudentDetails } from '@/lib/types';
+import { useAuth } from '@/firebase';
+import { signInAnonymously } from 'firebase/auth';
 
 const formSchema = z.object({
   fullName: z.string().min(2, { message: 'Full name is required.' }),
@@ -33,6 +35,14 @@ const formSchema = z.object({
 export default function StudentDetailsPage() {
   const router = useRouter();
   const context = useContext(TestContext);
+  const auth = useAuth();
+
+  useEffect(() => {
+    // Sign in the user anonymously when the page loads
+    signInAnonymously(auth).catch((error) => {
+      console.error("Anonymous sign-in failed:", error);
+    });
+  }, [auth]);
 
   if (!context) {
     throw new Error('TestContext not found');

@@ -1,12 +1,14 @@
 "use client";
 
-import React, { createContext, useState, useCallback, ReactNode, useEffect } from 'react';
+import React, { createContext, useState, useCallback, ReactNode, useEffect, useContext } from 'react';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { allQuestions, codingQuestions, aptitudeQuestions } from '@/lib/questions';
 import type { StudentDetails } from '@/lib/types';
-import { db } from '@/lib/firebase';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { useFirestore, useUser } from '@/firebase';
+import { collection, addDoc, serverTimestamp, doc, setDoc } from 'firebase/firestore';
+import { FirestorePermissionError } from '@/firebase/errors';
+import { errorEmitter } from '@/firebase/error-emitter';
 
 interface TestContextType {
   studentDetails: StudentDetails | null;
@@ -40,6 +42,8 @@ export const TestProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const router = useRouter();
   const { toast } = useToast();
+  const firestore = useFirestore();
+  const { user } = useUser();
 
   const calculateScores = useCallback(() => {
     let currentCodingScore = 0;
@@ -68,29 +72,47 @@ export const TestProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     const { codingScore, aptitudeScore } = calculateScores();
 
-    if (studentDetails) {
-      try {
-        await addDoc(collection(db, "results"), {
-          ...studentDetails,
-          codingScore,
-          aptitudeScore,
-          totalCoding: codingQuestions.length,
-          totalAptitude: aptitudeQuestions.length,
-          submittedAt: serverTimestamp(),
-          warningCount,
-          userAgent: navigator.userAgent,
+    if (studentDetails && user) {
+        const studentRef = doc(firestore, "students", user.uid);
+        const studentPayload = { ...studentDetails, id: user.uid };
+        
+        setDoc(studentRef, studentPayload, { merge: true }).catch((error) => {
+            const permissionError = new FirestorePermissionError({
+                path: studentRef.path,
+                operation: 'write',
+                requestResourceData: studentPayload,
+            });
+            errorEmitter.emit('permission-error', permissionError);
         });
-      } catch (error) {
-        console.error("Error writing document: ", error);
+
+        const testResultRef = doc(collection(firestore, `students/${user.uid}/testResults`));
+        const testResultPayload = {
+            studentId: user.uid,
+            codingScore,
+            aptitudeScore,
+            timestamp: serverTimestamp(),
+            browserInfo: navigator.userAgent,
+            warningsCount: warningCount,
+            id: testResultRef.id
+        };
+
+        setDoc(testResultRef, testResultPayload).catch((error) => {
+            const permissionError = new FirestorePermissionError({
+                path: testResultRef.path,
+                operation: 'create',
+                requestResourceData: testResultPayload,
+            });
+            errorEmitter.emit('permission-error', permissionError);
+        });
+    } else {
         toast({
-          title: "Submission Error",
-          description: "Could not save your test results. Please contact the administrator.",
-          variant: "destructive",
+            title: "Submission Error",
+            description: "You must be logged in to submit a test.",
+            variant: "destructive",
         });
-      }
     }
     router.replace('/result');
-  }, [calculateScores, studentDetails, warningCount, router, toast, isSubmitting]);
+  }, [calculateScores, studentDetails, warningCount, router, toast, isSubmitting, firestore, user]);
 
   const handleTabSwitch = useCallback(() => {
     if (!isTestStarted) return;
