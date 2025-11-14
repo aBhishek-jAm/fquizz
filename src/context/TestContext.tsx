@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { createContext, useState, useCallback, ReactNode, useEffect, useContext } from 'react';
@@ -76,16 +77,6 @@ export const TestProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         const studentRef = doc(firestore, "students", user.uid);
         const studentPayload = { ...studentDetails, id: user.uid };
         
-        setDoc(studentRef, studentPayload, { merge: true }).catch((error) => {
-            console.error("Error saving student details:", error);
-            const permissionError = new FirestorePermissionError({
-                path: studentRef.path,
-                operation: 'write',
-                requestResourceData: studentPayload,
-            });
-            errorEmitter.emit('permission-error', permissionError);
-        });
-
         const testResultRef = doc(collection(firestore, `students/${user.uid}/testResults`));
         const testResultPayload = {
             studentId: user.uid,
@@ -98,23 +89,39 @@ export const TestProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             studentName: studentDetails.fullName,
         };
 
-        setDoc(testResultRef, testResultPayload).catch((error) => {
-            console.error("Error saving test result:", error);
-            const permissionError = new FirestorePermissionError({
-                path: testResultRef.path,
-                operation: 'create',
-                requestResourceData: testResultPayload,
+        try {
+          await setDoc(studentRef, studentPayload, { merge: true });
+          await setDoc(testResultRef, testResultPayload);
+          router.replace('/result');
+        } catch (error: any) {
+            console.error("Error submitting test:", error);
+
+            if (error.name === 'FirebaseError') {
+              const path = (error.customData?._path as string) || testResultRef.path;
+              const permissionError = new FirestorePermissionError({
+                  path,
+                  operation: 'create',
+                  requestResourceData: testResultPayload,
+              });
+              errorEmitter.emit('permission-error', permissionError);
+            }
+
+            toast({
+                title: "Submission Error",
+                description: "There was a problem submitting your test results. Please try again.",
+                variant: "destructive",
             });
-            errorEmitter.emit('permission-error', permissionError);
-        });
+            setIsSubmitting(false); // Allow retry
+        }
+
     } else {
         toast({
             title: "Submission Error",
             description: "Could not submit test. User or student details missing.",
             variant: "destructive",
         });
+        setIsSubmitting(false);
     }
-    router.replace('/result');
   }, [calculateScores, studentDetails, warningCount, router, toast, isSubmitting, firestore, user]);
 
   const handleTabSwitch = useCallback(() => {
