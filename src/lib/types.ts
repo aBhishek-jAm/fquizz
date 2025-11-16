@@ -26,4 +26,7 @@ export interface TestResult {
   timestamp: any; // Firestore ServerTimestamp
   warningsCount: number;
   browserInfo: string;
+  collegeName: string;
+  mobileNumber: string;
+  usn: string;
 }

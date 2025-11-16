@@ -87,6 +87,9 @@ export const TestProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             warningsCount: warningCount,
             id: testResultRef.id,
             studentName: studentDetails.fullName,
+            collegeName: studentDetails.collegeName,
+            mobileNumber: studentDetails.mobile,
+            usn: studentDetails.usn,
         };
 
         try {

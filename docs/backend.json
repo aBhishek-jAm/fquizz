@@ -85,6 +85,18 @@
         "warningsCount": {
           "type": "number",
           "description": "The number of tab switch warnings received by the student."
+        },
+        "collegeName": {
+          "type": "string",
+          "description": "The name of the college the student attends."
+        },
+        "mobileNumber": {
+          "type": "string",
+          "description": "The mobile number of the student."
+        },
+        "usn": {
+          "type": "string",
+          "description": "The University Serial Number of the student."
         }
       },
       "required": [
@@ -94,7 +106,10 @@
         "aptitudeScore",
         "timestamp",
         "browserInfo",
-        "warningsCount"
+        "warningsCount",
+        "collegeName",
+        "mobileNumber",
+        "usn"
       ]
     },
     "Question": {
