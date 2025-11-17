@@ -80,7 +80,7 @@ export default function TestPage() {
     <>
       <header className="sticky top-0 z-10 w-full bg-card shadow-md">
         <div className="container mx-auto flex h-20 items-center justify-between px-4">
-          <div className="font-headline text-xl font-bold text-primary">ExamFlow</div>
+          <div className="font-headline text-xl font-bold text-primary">TECH FORTUNE</div>
           <Timer timeLeft={timeLeft} />
         </div>
         <Progress value={progressValue} className="h-1 rounded-none" />
