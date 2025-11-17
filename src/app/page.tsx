@@ -74,7 +74,7 @@ export default function StudentDetailsPage() {
           <div className="mx-auto bg-primary text-primary-foreground rounded-full p-3 w-fit mb-4">
             <BookOpenCheck className="h-8 w-8" />
           </div>
-          <CardTitle className="font-headline text-3xl">ExamFlow - Student Details</CardTitle>
+          <CardTitle className="font-headline text-3xl">TECH FORTUNE - Student Details</CardTitle>
         </CardHeader>
         <CardContent>
           <Form {...form}>
