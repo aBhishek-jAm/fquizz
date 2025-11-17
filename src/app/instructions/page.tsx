@@ -28,6 +28,7 @@ export default function InstructionsPage() {
     { icon: AlertTriangle, text: "Switching tabs is not allowed. After 2 warnings, the test will be auto-submitted." },
     { icon: FileWarning, text: "Do not refresh the page. Your progress may be lost." },
     { icon: BookCopy, text: "The test contains 60 MCQs: 30 coding questions followed by 30 logical reasoning & aptitude questions." },
+    { icon: Clock, text: "Wait till you get the result page before closing the test tab" },
   ];
 
   return (
