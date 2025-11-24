@@ -5,462 +5,522 @@ export const codingQuestions: Question[] = [
     id: 1,
     category: 'coding',
     language: 'C',
-    question: '#include<stdio.h>\nint main(){\n    int x = 5;\n    printf("%d", x++ * ++x);\n    return 0;\n}\n whats the output',
-    options: ["25", "30", "35", "Undefined Behavior"],
-    answer: "Undefined Behavior"
-  },
-  // 29 more coding questions
-  {
-    "id": 2,
-    "category": "coding",
-    "language": "Python",
-    "question": "What is the output of: `print([] is [])`?",
-    "options": ["True", "False", "Depends on Python version", "Error"],
-    "answer": "False"
-  },
-  {
-    "id": 3,
-    "category": "coding",
-    "language": "Python",
-    "question": "What is the output? `a = [1,2,3]; b = a; a += [4]; print(b)`",
-    "options": ["[1,2,3]", "[1,2,3,4]", "Error", "None"],
-    "answer": "[1,2,3,4]"
-  },
-  {
-    "id": 4,
-    "category": "coding",
-    "language": "Python",
-    "question": "What does `sum([[1,2],[3,4]], [])` return?",
-    "options": ["[1,2,3,4]", "[[1,2],[3,4]]", "TypeError", "[1,2]"],
-    "answer": "[1,2,3,4]"
-  },
-  {
-    "id": 5,
-    "category": "coding",
-    "language": "Python",
-    "question": "What is the output of: `print({1,2,3} == {3,2,1})`?",
-    "options": ["True", "False", "Depends", "Error"],
-    "answer": "True"
-  },
-  {
-    "id": 6,
-    "category": "coding",
-    "language": "Python",
-    "question": "What is the output? `x = (i*i for i in range(3)); print(next(x), next(x))`",
-    "options": ["0 1", "0 4", "1 4", "Error"],
-    "answer": "0 1"
-  },
-  {
-    "id": 7,
-    "category": "coding",
-    "language": "Java",
-    "question": "What is the result of: `System.out.println(100/0);`?",
-    "options": ["Infinity", "Runtime Error", "0", "NaN"],
-    "answer": "Runtime Error"
-  },
-  {
-    "id": 8,
-    "category": "coding",
-    "language": "Java",
-    "question": "Which one is true about Java interfaces?",
-    "options": [
-      "Interfaces can have constructors",
-      "Interfaces can contain static methods",
-      "Interfaces can be instantiated directly",
-      "Interfaces cannot have default methods"
+    question: `Consider the expression using volatile and sequence of side-effects:
+#include <stdio.h>
+int main(){
+    volatile int x = 1;
+    int a = (x++ , ++x , x += x , x-- , x);
+    printf("%d", a ^ (a << (a & 3)));
+    return 0;
+}`,
+    options: [
+      "Undefined Behavior due to unspecified evaluation order",
+      "Deterministic bitwise integer printed",
+      "Depends on compiler optimizations and UB manifests",
+      "Always prints 0"
     ],
-    "answer": "Interfaces can contain static methods"
+    answer: "Undefined Behavior due to unspecified evaluation order"
   },
   {
-    "id": 9,
-    "category": "coding",
-    "language": "Java",
-    "question": "What is printed? `System.out.println('A' + 1);`",
-    "options": ["A1", "66", "B", "Error"],
-    "answer": "66"
+    id: 2,
+    category: 'coding',
+    language: 'C',
+    question: `Given pointer arithmetic and strict aliasing rules:
+struct S { char c; int x; };
+int main(){
+  struct S s = {'A', 0x01020304};
+  unsigned char *p = (unsigned char*)&s.x;
+  printf("%02x", p[0]);
+}
+What is guaranteed to print by the C standard?`,
+    options: ["04", "01", "Implementation-defined endianness", "Undefined behavior due to aliasing"],
+    answer: "Implementation-defined endianness"
   },
   {
-    "id": 10,
-    "category": "coding",
-    "language": "Java",
-    "question": "Which of the following is true about `StringBuilder`?",
-    "options": ["It is immutable", "It is thread-safe", "It is mutable", "It stores values in constant pool"],
-    "answer": "It is mutable"
+    id: 3,
+    category: 'coding',
+    language: 'C',
+    question: `What does the C standard guarantee about evaluating i++ + ++i when i is an int?`,
+    options: ["Well-defined determined result", "Undefined behavior", "Sequence-point defined to left-to-right", "Implementation defined but not undefined"],
+    answer: "Undefined behavior"
   },
   {
-    "id": 11,
-    "category": "coding",
-    "language": "Java",
-    "question": "What happens when a subclass does not implement all abstract methods?",
-    "options": [
-      "Compile-time error",
-      "Runtime error",
-      "It becomes an abstract class",
-      "Nothing will happen"
-    ],
-    "answer": "It becomes an abstract class"
+    id: 4,
+    category: 'coding',
+    language: 'Python',
+    question: `What does this print and why?
+class X:
+    def __eq__(self, other):
+        return True
+    def __hash__(self):
+        return hash(id(self))
+
+s = {X(): 1, X(): 2, X(): 3}
+print(len(s))`,
+    options: ["1", "2", "3", "Implementation dependent"],
+    answer: "3"
   },
   {
-    "id": 12,
-    "category": "coding",
-    "language": "C",
-    "question": "What is the output of: `printf(\"%d\", 'A' + 1);`?",
-    "options": ["66", "A1", "Error", "B"],
-    "answer": "66"
+    id: 5,
+    category: 'coding',
+    language: 'Python',
+    question: `What is the output of:
+funcs = [lambda x=i: x*i for i in range(1,5)]
+print(sum(f() for f in funcs))
+Explain binding behavior.`,
+    options: ["40", "30", "20", "10"],
+    answer: "40"
   },
   {
-    "id": 13,
-    "category": "coding",
-    "language": "C",
-    "question": "What will happen? `int a=5; int b=0; printf(\"%d\", a/b);`",
-    "options": ["0", "Infinity", "Undefined behaviour", "Error"],
-    "answer": "Undefined behaviour"
+    id: 6,
+    category: 'coding',
+    language: 'Python',
+    question: `Consider multiple inheritance and MRO:
+class A: pass
+class B(A): pass
+class C(A): pass
+class D(B, C): pass
+print(D.mro())
+Which property holds for the MRO?`,
+    options: ["D, B, C, A, object", "D, C, B, A, object", "Depends on interpreter", "Error: inconsistent hierarchy"],
+    answer: "D, B, C, A, object"
   },
   {
-    "id": 14,
-    "category": "coding",
-    "language": "C",
-    "question": "What is the output of: `printf(\"%d\", sizeof(5.0));`",
-    "options": ["4", "8", "2", "Depends on compiler"],
-    "answer": "8"
+    id: 7,
+    category: 'coding',
+    language: 'Java',
+    question: `In Java, what does the following print?
+class A { static int x; static { x = x++ + ++x; } }
+public class Main { public static void main(String[] a) { System.out.println(A.x); } }
+Assume standard HotSpot JVM semantics.`,
+    options: ["0", "1", "2", "Undefined per JVM"],
+    answer: "1"
   },
   {
-    "id": 15,
-    "category": "coding",
-    "language": "C",
-    "question": "What does `extern` do?",
-    "options": [
-      "Allocates memory globally",
-      "Declares a variable without defining it",
-      "Defines a constant",
-      "Declares a pointer variable"
-    ],
-    "answer": "Declares a variable without defining it"
+    id: 8,
+    category: 'coding',
+    language: 'Java',
+    question: `What will this print?
+System.out.println((Object)new int[]{1,2} instanceof Object[]);
+Explain arrays and boxing.`,
+    options: ["true", "false", "compile error", "Depends on JVM version"],
+    answer: "false"
   },
   {
-    "id": 16,
-    "category": "coding",
-    "language": "Python",
-    "question": "What is the output of: `print((1,2) < (1,2,3))`?",
-    "options": ["True", "False", "Error", "Depends"],
-    "answer": "True"
+    id: 9,
+    category: 'coding',
+    language: 'Java',
+    question: `What is the result of concurrent modification sequencing:
+List<Integer> L = Collections.synchronizedList(new ArrayList<>());
+// thread1 iterates while thread2 modifies
+// Is ConcurrentModificationException guaranteed?`,
+    options: ["Guaranteed to throw CME", "Not thrown when using synchronizedList if external sync used correctly", "Behavior unspecified", "No exception but data race"],
+    answer: "Not thrown when using synchronizedList if external sync used correctly"
   },
   {
-    "id": 17,
-    "category": "coding",
-    "language": "Python",
-    "question": "What will `list('abc')` return?",
-    "options": ["['abc']", "['a','b','c']", "['ab','c']", "Error"],
-    "answer": "['a','b','c']"
+    id: 10,
+    category: 'coding',
+    language: 'Algorithms',
+    question: `You have a weighted directed acyclic graph with possibly exponential number of paths. You need the k shortest simple paths between s and t with k up to 10^6. Which algorithmic approach scales best in practice?`,
+    options: ["Yen's algorithm (path deviations)", "Kahn's topological + DP enumerator", "Eppstein's algorithm (implicit heap)", "Dijkstra repeated k times"],
+    answer: "Eppstein's algorithm (implicit heap)"
   },
   {
-    "id": 18,
-    "category": "coding",
-    "language": "Python",
-    "question": "What is the output? `print(type(lambda x: x))`",
-    "options": ["function", "lambda", "<class 'function'>", "Error"],
-    "answer": "<class 'function'>"
+    id: 11,
+    category: 'coding',
+    language: 'Concurrency',
+    question: `On x86, which of these memory orderings is not possible using only normal loads/stores (no fences)?`,
+    options: ["Load-load reordering", "Store-load reordering", "Store-store reordering", "Load-store reordering"],
+    answer: "Store-load reordering"
   },
   {
-    "id": 19,
-    "category": "coding",
-    "language": "Java",
-    "question": "Which of the following is true about Java enums?",
-    "options": [
-      "Enums cannot have methods",
-      "Enums extend the Enum class",
-      "Enums are primitive types",
-      "Enums cannot have constructors"
-    ],
-    "answer": "Enums extend the Enum class"
+    id: 12,
+    category: 'coding',
+    language: 'C++',
+    question: `Given C++17 guaranteed copy elision, what is the observable difference between returning a named local vs prvalue with noexcept move?`,
+    options: ["No observable difference (mandatory elision)", "Potential extra copy in debug builds", "Undefined behavior if move throws", "Signature changes at link time"],
+    answer: "No observable difference (mandatory elision)"
   },
   {
-    "id": 20,
-    "category": "coding",
-    "language": "Java",
-    "question": "What is printed? `System.out.println(0.0/0.0);`",
-    "options": ["0", "Infinity", "NaN", "Error"],
-    "answer": "NaN"
+    id: 13,
+    category: 'coding',
+    language: 'C++',
+    question: `What is printed by this snippet?
+#include <iostream>
+struct A{A(){std::cout<<"c";}A(const A&){std::cout<<"C";}~A(){std::cout<<"d";}};
+A f(){A a; return a;}
+int main(){A x = f();}
+Possible outputs?`,
+    options: ["c d", "c C d d", "c d d (due to elision)", "Compiler dependent"],
+    answer: "c d d (due to elision)"
   },
   {
-    "id": 21,
-    "category": "coding",
-    "language": "Java",
-    "question": "Which exception is thrown when accessing an array index out of range?",
-    "options": [
-      "NullPointerException",
-      "IndexOutOfBoundsException",
-      "IllegalStateException",
-      "ArithmeticException"
-    ],
-    "answer": "IndexOutOfBoundsException"
+    id: 14,
+    category: 'coding',
+    language: 'Python',
+    question: `What does this print when run under CPython 3.11?
+import gc
+class X: pass
+x = X(); x.r = x
+del x
+print(gc.collect())
+# number of unreachable objects reclaimed`,
+    options: ["0", "1", "2", "Implementation dependent"],
+    answer: "1"
   },
   {
-    "id": 22,
-    "category": "coding",
-    "language": "C",
-    "question": "What is the output? `int a = 5; int *p = &a; printf(\"%p\", p);`",
-    "options": ["Address of variable", "5", "Error", "0"],
-    "answer": "Address of variable"
+    id: 15,
+    category: 'coding',
+    language: 'Systems',
+    question: `A process maps a file with mmap() MAP_SHARED, then forks. Both parent and child write different bytes to the same page concurrently (no synchronization). What can be observed?`,
+    options: ["Writes are atomically merged", "Writes may race producing any result", "Kernel serializes writes deterministically", "Undefined at user-level but deterministic in kernel"],
+    answer: "Writes may race producing any result"
   },
   {
-    "id": 23,
-    "category": "coding",
-    "language": "C",
-    "question": "What is wrong with: `int arr[0];`?",
-    "options": ["Nothing", "Zero-length arrays are invalid", "Compiler crash", "Runtime error"],
-    "answer": "Zero-length arrays are invalid"
+    id: 16,
+    category: 'coding',
+    language: 'Security',
+    question: `Which of these is the strongest mitigation specifically preventing return-oriented programming (ROP) on x86-64?`,
+    options: ["DEP (NX)", "ASLR", "CET (shadow stack) + Control-Flow Integrity", "Stack canaries"],
+    answer: "CET (shadow stack) + Control-Flow Integrity"
   },
   {
-    "id": 24,
-    "category": "coding",
-    "language": "C",
-    "question": "What is printed? `printf(\"%d\", sizeof(\"hello\"));`",
-    "options": ["5", "6", "4", "Depends"],
-    "answer": "6"
+    id: 17,
+    category: 'coding',
+    language: 'Databases',
+    question: `Given two transactions under SERIALIZABLE isolation, one reads then updates a row, the other updates then reads the same row. Which anomaly must be prevented by the DBMS?`,
+    options: ["Dirty read", "Lost update", "Write skew", "Phantom read"],
+    answer: "Lost update"
   },
   {
-    "id": 25,
-    "category": "coding",
-    "language": "Python",
-    "question": "What is the output? `print({True: 'A', 1: 'B'}[True])`",
-    "options": ["A", "B", "Error", "None"],
-    "answer": "B"
+    id: 18,
+    category: 'coding',
+    language: 'Algorithms',
+    question: `Which data structure gives O(1) amortized time for add, remove, and get-random-element?`,
+    options: ["HashSet only", "ArrayList + HashMap combo", "Treap", "LinkedHashMap"],
+    answer: "ArrayList + HashMap combo"
   },
   {
-    "id": 26,
-    "category": "coding",
-    "language": "Python",
-    "question": "Which of the following is NOT a valid Python datatype?",
-    "options": ["frozenset", "bytearray", "tuple", "linkedlist"],
-    "answer": "linkedlist"
+    id: 19,
+    category: 'coding',
+    language: 'Type Theory',
+    question: `In Hindley–Milner type inference, which expression forces you to consider higher-ranked polymorphism (not inferred by standard HM)?`,
+    options: ["let id = (lambda x: x) in (id id)", "A function that expects a polymorphic function argument", "Higher-ranked types in ML are inferred automatically", "None of the above"],
+    answer: "A function that expects a polymorphic function argument"
   },
   {
-    "id": 27,
-    "category": "coding",
-    "language": "Java",
-    "question": "What is the output? `System.out.println(true && false || true);`",
-    "options": ["true", "false", "Error", "Depends"],
-    "answer": "true"
+    id: 20,
+    category: 'coding',
+    language: 'Compilers',
+    question: `When optimizing tail calls, which transformation must the compiler perform to ensure semantics preservation in presence of stack-unwinding (exceptions)?`,
+    options: ["Frame pointer elimination", "Emit unwind info for transformed frames", "Omit unwind info (safe)", "Convert exceptions to error codes"],
+    answer: "Emit unwind info for transformed frames"
   },
   {
-    "id": 28,
-    "category": "coding",
-    "language": "Java",
-    "question": "Which will cause a compile error?",
-    "options": [
-      "int x = 10_000;",
-      "double d = 1_2_3.4;",
-      "int y = _50;",
-      "int z = 0b1010;"
-    ],
-    "answer": "int y = _50;"
+    id: 21,
+    category: 'coding',
+    language: 'Python',
+    question: `Given this tricky dict/key identity case:
+print({True: 'A', 1: 'B'}[True])
+Why does it print what it does?`,
+    options: ["'A' because booleans are distinct keys", "'B' because True==1 and last inserted wins", "KeyError", "Implementation dependent"],
+    answer: "'B' because True==1 and last inserted wins"
   },
   {
-    "id": 29,
-    "category": "coding",
-    "language": "C",
-    "question": "What is printed? `printf(\"%d\", sizeof(int*));`",
-    "options": ["2", "4", "8", "Depends on system"],
-    "answer": "Depends on system"
+    id: 22,
+    category: 'coding',
+    language: 'C',
+    question: `What does sizeof("hello") return in C and why?`,
+    options: ["5 because five characters", "6 because null terminator included", "Depends on compiler", "Undefined"],
+    answer: "6 because null terminator included"
   },
-  { id: 30, category: 'coding', language: 'Java', question: 'Which access modifier provides the widest accessibility?', options: ['public', 'private', 'protected', 'default'], answer: 'public' }
+  {
+    id: 23,
+    category: 'coding',
+    language: 'Concurrency',
+    question: `Which lock-free property guarantees that some thread will make progress in a finite number of steps?`,
+    options: ["Wait-freedom", "Lock-freedom", "Obstruction-freedom", "Starvation-freedom"],
+    answer: "Lock-freedom"
+  },
+  {
+    id: 24,
+    category: 'coding',
+    language: 'Algorithms',
+    question: `Given comparison-based sorting, what is the lower bound on average comparisons to sort n elements?`,
+    options: ["O(n)", "Ω(n log n)", "O(n log n)", "Ω(n^2)"],
+    answer: "Ω(n log n)"
+  },
+  {
+    id: 25,
+    category: 'coding',
+    language: 'C',
+    question: `Which of these declarations is ill-formed in ISO C?
+int arr[0];
+int f(void) { return sizeof(arr); }
+`,
+    options: ["arr[0] is valid in C99", "Zero-length arrays are invalid in standard C", "arr[0] is allowed as flexible array member", "Behavior implementation-defined but allowed"],
+    answer: "Zero-length arrays are invalid in standard C"
+  },
+  {
+    id: 26,
+    category: 'coding',
+    language: 'Security',
+    question: `A program uses strncat(dest, src, n). Which of the following is a subtle bug possibility?`,
+    options: ["Guaranteed safe if n is src length", "Off-by-one leaving no space for null terminator", "Always safe on modern libc", "Buffer overflow impossible with strncat"],
+    answer: "Off-by-one leaving no space for null terminator"
+  },
+  {
+    id: 27,
+    category: 'coding',
+    language: 'Python',
+    question: `What is the result of:
+from functools import lru_cache
+@lru_cache(None)
+def f(n):
+    if n<2: return n
+    return f(n-1)+f(n-2)
+print(f(50))
+Why is this fast?`,
+    options: ["Memoization reduces to linear time", "Python uses fast native Fibonacci", "Tail-call optimization", "It is still exponential but hardware fast"],
+    answer: "Memoization reduces to linear time"
+  },
+  {
+    id: 28,
+    category: 'coding',
+    language: 'Java',
+    question: `Which of the following will cause a compile error in Java 11?`,
+    options: ["int x = 10_000;", "double d = 1_2_3.4;", "int y = _50;", "int z = 0b1010;"],
+    answer: "int y = _50;"
+  },
+  {
+    id: 29,
+    category: 'coding',
+    language: 'Algorithms',
+    question: `You need to maintain medians in a stream of up to 10^9 numbers with O(log n) update and O(1) median query. Which structure is typical?`,
+    options: ["Two heaps (max-heap + min-heap)", "Balanced BST with order-statistics", "Segment tree over value range", "Counting sort buckets"],
+    answer: "Two heaps (max-heap + min-heap)"
+  },
+  {
+    id: 30,
+    category: 'coding',
+    language: 'C++',
+    question: `In C++ templates, what does SFINAE stand for and what does it enable?`,
+    options: ["Substitution Failure Is Not An Error; enable overload resolution tricks", "Simple Fail Is Not Allowed; disable templates", "Static Failure Is New Error; compile-time error handling", "Substitution Fails, Ignore Attribute"],
+    answer: "Substitution Failure Is Not An Error; enable overload resolution tricks"
+  }
 ];
 
 export const aptitudeQuestions: Question[] = [
   {
     id: 31,
     category: 'aptitude',
-    question: 'If a car travels at 60 km/h, how far will it travel in 45 minutes?',
-    options: ["30 km", "45 km", "50 km", "60 km"],
-    answer: "45 km"
-  },
-  // 29 more aptitude questions
-  {
-    "id": 32,
-    "category": "aptitude",
-    "question": "What is the next number in the series: 3, 8, 15, 24, 35, ?",
-    "options": ["48", "49", "47", "50"],
-    "answer": "48"
+    question: `A particle moves with acceleration a(t) = k / t^2 for t>0. If v(1)=5 and v(2)=7, find v(4). (k constant)`,
+    options: ["9", "8", "7.5", "10"],
+    answer: "8"
   },
   {
-    "id": 33,
-    "category": "aptitude",
-    "question": "A shopkeeper marks an item 40% above cost price and offers a discount of 10%. What is the profit percentage?",
-    "options": ["26%", "30%", "24%", "28%"],
-    "answer": "26%"
+    id: 32,
+    category: 'aptitude',
+    question: `Sequence defined by a(n) = a(n-1)^{1/2} * a(n-2)^{1/4}, with a1=16, a2=4. Compute a5.`,
+    options: ["2", "4", "8", "16"],
+    answer: "2"
   },
   {
-    "id": 34,
-    "category": "aptitude",
-    "question": "If 4 workers complete a task in 18 days, how many days will 6 workers take (assuming equal efficiency)?",
-    "options": ["12 days", "10 days", "15 days", "8 days"],
-    "answer": "12 days"
+    id: 33,
+    category: 'aptitude',
+    question: `A 3×3 matrix has eigenvalues 2,3,6. If you add 1 to the (1,1) entry only, which of the following is necessarily true about the determinant change?`,
+    options: ["Change is +1", "Change is at most 6", "Cannot be determined without eigenvectors", "Determinant increases by product rule"],
+    answer: "Cannot be determined without eigenvectors"
   },
   {
-    "id": 35,
-    "category": "aptitude",
-    "question": "The average of 6 numbers is 20. One number is replaced by 50, and the new average becomes 25. What was the replaced number?",
-    "options": ["5", "10", "15", "20"],
-    "answer": "5"
+    id: 34,
+    category: 'aptitude',
+    question: `Let f(x) be a 4th-order beam deflection satisfying E I y''''(x) = x^2 with symmetric boundary conditions. What is y(0)?`,
+    options: ["0", "Proportional to loading/EI", "Indeterminate without constants", "Depends on slope at boundaries"],
+    answer: "0"
   },
   {
-    "id": 36,
-    "category": "aptitude",
-    "question": "Which word does NOT belong to the group? (Iron, Copper, Plastics, Aluminium)",
-    "options": ["Iron", "Copper", "Plastics", "Aluminium"],
-    "answer": "Plastics"
+    id: 35,
+    category: 'aptitude',
+    question: `Find N such that φ(N) = 840 (Euler totient). Which option is a valid candidate?`,
+    options: ["1001", "1320", "1680", "1540"],
+    answer: "1680"
   },
   {
-    "id": 37,
-    "category": "aptitude",
-    "question": "A train passes a 500 m long platform in 25 seconds. If its speed is 72 km/h, what is the length of the train?",
-    "options": ["500 m", "300 m", "200 m", "250 m"],
-    "answer": "300 m"
+    id: 36,
+    category: 'aptitude',
+    question: `Solve: the infinite continued fraction x = 1 + 1/(2 + 1/(3 + 1/(4 + ...))). What is x approximately?`,
+    options: ["1.434", "1.470", "1.618", "1.732"],
+    answer: "1.434"
   },
   {
-    "id": 38,
-    "category": "aptitude",
-    "question": "Find the missing number: 2, 6, 12, 20, 30, ?",
-    "options": ["42", "40", "45", "48"],
-    "answer": "42"
+    id: 37,
+    category: 'aptitude',
+    question: `Find smallest integer n>1 such that 2^n ≡ 1 (mod 41).`,
+    options: ["5", "8", "10", "40"],
+    answer: "5"
   },
   {
-    "id": 39,
-    "category": "aptitude",
-    "question": "If a number is increased by 25% and then decreased by 20%, the net change is:",
-    "options": ["+0%", "+2%", "+4%", "−5%"],
-    "answer": "+0%"
+    id: 38,
+    category: 'aptitude',
+    question: `A coin is biased: P(H)=p. You toss until you see HT. Expected waiting time?`,
+    options: ["1/(p(1-p))", "1/(1-p)", "(1+p)/(p(1-p))", "1/p"],
+    answer: "(1+p)/(p(1-p))"
   },
   {
-    "id": 40,
-    "category": "aptitude",
-    "question": "If 'BALL' is coded as '2355', what is the code for 'CALL'?",
-    "options": ["3355", "2355", "1455", "2455"],
-    "answer": "4355"
+    id: 39,
+    category: 'aptitude',
+    question: `Let S be sum of first 12 primes. Which is S?`,
+    options: ["197", "199", "198", "200"],
+    answer: "197"
   },
   {
-    "id": 41,
-    "category": "aptitude",
-    "question": "At what time between 4 and 5 o'clock do the hands of a clock form a right angle?",
-    "options": ["4:38 2/11", "4:21 9/11", "4:32 8/11", "4:15 5/11"],
-    "answer": "4:38 2/11"
+    id: 40,
+    category: 'aptitude',
+    question: `A and B together can do a job in 12 days. A alone takes 20 days more than B alone. How many days does A take?`,
+    options: ["30", "40", "20", "24"],
+    answer: "30"
   },
   {
-    "id": 42,
-    "category": "aptitude",
-    "question": "A man walks at 5 km/h for 2 hours and then at 4 km/h for 3 hours. What is his average speed?",
-    "options": ["4.4 km/h", "4.6 km/h", "4.8 km/h", "5 km/h"],
-    "answer": "4.6 km/h"
+    id: 41,
+    category: 'aptitude',
+    question: `Find time between 4 and 5 o'clock when hour and minute hands are at right angle (closest after 4:00).`,
+    options: ["4:21 9/11", "4:38 2/11", "4:32 8/11", "4:15 5/11"],
+    answer: "4:21 9/11"
   },
   {
-    "id": 43,
-    "category": "aptitude",
-    "question": "The sum of the ages of A, B, and C is 75. Five years ago, their ages were in the ratio 3:4:5. What is C's present age?",
-    "options": ["30", "25", "35", "40"],
-    "answer": "30"
+    id: 42,
+    category: 'aptitude',
+    question: `A walks 5 km/h for 2 h, then 4 km/h for 3 h. Average speed?`,
+    options: ["4.4 km/h", "4.6 km/h", "4.8 km/h", "5 km/h"],
+    answer: "4.6 km/h"
   },
   {
-    "id": 44,
-    "category": "aptitude",
-    "question": "Series: 11, 14, 12, 15, 13, 16, ?",
-    "options": ["14", "16", "17", "18"],
-    "answer": "14"
+    id: 43,
+    category: 'aptitude',
+    question: `Sum of ages A+B+C =75. Five years ago ratios were 3:4:5. What is present age of C?`,
+    options: ["30", "25", "35", "40"],
+    answer: "30"
   },
   {
-    "id": 45,
-    "category": "aptitude",
-    "question": "BOOK : PAPER :: BRICK : ?",
-    "options": ["CLAY", "STONE", "HOUSE", "WALL"],
-    "answer": "CLAY"
+    id: 44,
+    category: 'aptitude',
+    question: `Series: 11,14,12,15,13,16,... Next term?`,
+    options: ["14", "16", "17", "18"],
+    answer: "14"
   },
   {
-    "id": 46,
-    "category": "aptitude",
-    "question": "A rectangle has a diagonal of 10 cm and one side of 6 cm. What is the other side?",
-    "options": ["8 cm", "6 cm", "4 cm", "5 cm"],
-    "answer": "8 cm"
+    id: 45,
+    category: 'aptitude',
+    question: `BOOK : PAPER :: BRICK : ? (analogy by raw material)`,
+    options: ["CLAY", "STONE", "HOUSE", "WALL"],
+    answer: "CLAY"
   },
   {
-    "id": 47,
-    "category": "aptitude",
-    "question": "What is 15% of 240?",
-    "options": ["36", "34", "32", "30"],
-    "answer": "36"
+    id: 46,
+    category: 'aptitude',
+    question: `Rectangle diagonal 10 cm, one side 6 cm. Other side?`,
+    options: ["8 cm", "6 cm", "4 cm", "5 cm"],
+    answer: "8 cm"
   },
   {
-    "id": 48,
-    "category": "aptitude",
-    "question": "How many diagonals does a decagon (10-sided polygon) have?",
-    "options": ["35", "40", "45", "50"],
-    "answer": "35"
+    id: 47,
+    category: 'aptitude',
+    question: `What is 15% of 240?`,
+    options: ["36", "34", "32", "30"],
+    answer: "36"
   },
   {
-    "id": 49,
-    "category": "aptitude",
-    "question": "If you rearrange the letters 'NITRA', you get the name of a:",
-    "options": ["Metal", "River", "Continent", "Country"],
-    "answer": "Country"
+    id: 48,
+    category: 'aptitude',
+    question: `How many diagonals does a decagon have?`,
+    options: ["35", "40", "45", "50"],
+    answer: "35"
   },
   {
-    "id": 50,
-    "category": "aptitude",
-    "question": "What is the cube root of 3375?",
-    "options": ["15", "12", "18", "20"],
-    "answer": "15"
+    id: 49,
+    category: 'aptitude',
+    question: `Rearrange letters 'NITRA' to get a:`,
+    options: ["Metal", "River", "Continent", "Country"],
+    answer: "Country"
   },
   {
-    "id": 51,
-    "category": "aptitude",
-    "question": "A farmer sold a cow for $840 at a loss of 16%. What was the cost price?",
-    "options": ["$1000", "$960", "$1050", "$750"],
-    "answer": "$1000"
+    id: 50,
+    category: 'aptitude',
+    question: `Cube root of 3375?`,
+    options: ["15", "12", "18", "20"],
+    answer: "15"
   },
   {
-    "id": 52,
-    "category": "aptitude",
-    "question": "Which number is the odd one out: 11, 23, 36, 47, 59?",
-    "options": ["36", "23", "47", "59"],
-    "answer": "36"
+    id: 51,
+    category: 'aptitude',
+    question: `A farmer sold a cow for $840 at loss of 16%. Cost price?`,
+    options: ["$1000", "$960", "$1050", "$750"],
+    answer: "$1000"
   },
   {
-    "id": 53,
-    "category": "aptitude",
-    "question": "A is the father of B. B is the father of C. C is the brother of D. How is A related to D?",
-    "options": ["Grandfather", "Father", "Uncle", "Cousin"],
-    "answer": "Grandfather"
+    id: 52,
+    category: 'aptitude',
+    question: `Which number is odd one out: 11,23,36,47,59?`,
+    options: ["36", "23", "47", "59"],
+    answer: "36"
   },
   {
-    "id": 54,
-    "category": "aptitude",
-    "question": "What day of the week was 1st January 1990?",
-    "options": ["Monday", "Sunday", "Friday", "Wednesday"],
-    "answer": "Monday"
+    id: 53,
+    category: 'aptitude',
+    question: `A is father of B. B is father of C. C is brother of D. How is A related to D?`,
+    options: ["Grandfather", "Father", "Uncle", "Cousin"],
+    answer: "Grandfather"
   },
   {
-    "id": 55,
-    "category": "aptitude",
-    "question": "A quantity is increased by 20% and then decreased by 20%. What is the net change?",
-    "options": ["4% decrease", "No change", "4% increase", "8% decrease"],
-    "answer": "4% decrease"
+    id: 54,
+    category: 'aptitude',
+    question: `What day of week was 1 Jan 1990?`,
+    options: ["Monday", "Sunday", "Friday", "Wednesday"],
+    answer: "Monday"
   },
   {
-    "id": 56,
-    "category": "aptitude",
-    "question": "Choose the word which is different: (Lion, Tiger, Leopard, Bear)",
-    "options": ["Lion", "Tiger", "Leopard", "Bear"],
-    "answer": "Bear"
+    id: 55,
+    category: 'aptitude',
+    question: `Quantity increased by 20% then decreased by 20%. Net change?`,
+    options: ["4% decrease", "No change", "4% increase", "8% decrease"],
+    answer: "4% decrease"
   },
   {
-    "id": 57,
-    "category": "aptitude",
-    "question": "What is the sum of the first 12 prime numbers?",
-    "options": ["197", "199", "198", "200"],
-    "answer": "197"
+    id: 56,
+    category: 'aptitude',
+    question: `Choose the word different: (Lion, Tiger, Leopard, Bear)`,
+    options: ["Lion", "Tiger", "Leopard", "Bear"],
+    answer: "Bear"
   },
-  { id: 58, category: 'aptitude', question: 'A can do a work in 15 days and B in 20 days. If they work on it together for 4 days, then the fraction of the work that is left is :', options: ['8/15', '7/15', '1/4', '1/10'], answer: '8/15' },
-  { id: 59, category: 'aptitude', question: 'If 20 men can build a wall 56 meters long in 6 days, what length of a similar wall can be built by 35 men in 3 days?', options: ['49 meters', '52 meters', '56 meters', '47 meters'], answer: '49 meters' },
-  { id: 60, category: 'aptitude', question: 'The angle of elevation of a ladder leaning against a wall is 60° and the foot of the ladder is 4.6 m away from the wall. What is the length of the ladder?', options: ['9.2 m', '8.4 m', '10.2 m', '7.8 m'], answer: '9.2 m' }
+  {
+    id: 57,
+    category: 'aptitude',
+    question: `Sum of first 12 prime numbers?`,
+    options: ["197", "199", "198", "200"],
+    answer: "197"
+  },
+  {
+    id: 58,
+    category: 'aptitude',
+    question: `A can do work in 15 days, B in 20 days. They work 4 days together. Fraction left?`,
+    options: ["8/15", "7/15", "1/4", "1/10"],
+    answer: "8/15"
+  },
+  {
+    id: 59,
+    category: 'aptitude',
+    question: `If 20 men build 56 m wall in 6 days, how long can 35 men build in 3 days?`,
+    options: ["49 meters", "52 meters", "56 meters", "47 meters"],
+    answer: "49 meters"
+  },
+  {
+    id: 60,
+    category: 'aptitude',
+    question: `Ladder foot 4.6 m from wall, angle of elevation 60°. Ladder length?`,
+    options: ["9.2 m", "8.4 m", "10.2 m", "7.8 m"],
+    answer: "9.2 m"
+  }
 ];
 
 export const allQuestions = [...codingQuestions, ...aptitudeQuestions];
