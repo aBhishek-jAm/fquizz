@@ -5,7 +5,7 @@ export const codingQuestions: Question[] = [
     id: 1,
     category: 'coding',
     language: 'C',
-    question: '#include<stdio.h>\nint main(){\n    int x = 5;\n    printf("%d", x++ * ++x);\n    return 0;\n}',
+    question: '#include<stdio.h>\nint main(){\n    int x = 5;\n    printf("%d", x++ * ++x);\n    return 0;\n}\n whats the output',
     options: ["25", "30", "35", "Undefined Behavior"],
     answer: "Undefined Behavior"
   },
